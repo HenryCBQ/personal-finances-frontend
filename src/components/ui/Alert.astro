@@ -1,0 +1,55 @@
+---
+import "@styles/vars.css";
+import type { HTMLAttributes } from 'astro/types';
+
+export interface Props extends HTMLAttributes<'dialog'>{
+    title: string,
+    textMessage: string
+}
+const { title, textMessage, ...props } = Astro.props;
+---
+
+<dialog {...props}>
+    <h2>{title}</h2>
+    <p>{textMessage}</p>
+    <form>
+        <button formmethod="dialog">Aceptar</button>
+    </form>
+</dialog>
+
+<style>
+    dialog {
+        width: 50%;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin: auto;
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 0px;
+            border-radius: 0.5rem;
+            background-color: var(--color-secondary);
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: var(--color-secondary-hover);
+        }
+    }
+
+    dialog::backdrop {
+        background: linear-gradient(#000d, #000a);
+    }
+</style>

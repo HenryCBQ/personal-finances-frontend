@@ -1,0 +1,41 @@
+---
+import "@styles/vars.css";
+import type { HTMLAttributes } from 'astro/types';
+
+export interface Props extends HTMLAttributes<'input'> {
+    label: string;
+    id: string
+    error?: string;
+}
+
+const { label, id, error, ...props } = Astro.props;
+---
+
+<div>
+    <label for={id}>{label}</label>
+    <input id={id} {...props}/>
+    {
+        error && <p>{error}</p>
+    }
+</div>
+
+<style>
+    div {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input {
+        color: oklch(.708 0 0);
+        background-color: oklch(.205 0 0);
+        border-radius: 0.5rem;
+        border: 1px solid oklch(.371 0 0);
+        padding: 0.75rem;
+    }
+
+    label {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
+

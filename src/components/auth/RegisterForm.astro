@@ -1,0 +1,146 @@
+---
+import "@styles/vars.css";
+import ButtonLoginGoogle from "@components/ui/ButtonLoginGoogle.astro";
+import SecundaryButton from "@components/ui/SecundaryButton.astro";
+import TextInput from "@components/ui/TextInput.astro";
+import Alert from "@components/ui/Alert.astro";
+---
+
+<div class="container">
+    <h1>Crear una cuenta</h1>
+    <p>¿Ya tienes una? <a href="/auth/login">Inicia sesión</a></p>
+    
+    <ButtonLoginGoogle textContent="Regístrate con cuenta de Google" id="google-button" />
+
+    <p id="message-error" class="message-error"></p>
+
+    <form id="register-form">
+        <TextInput 
+            label="Correo electrónico"
+            id="email"
+            name="email"
+            type="email"
+            minlength="6"
+            maxlength="60"
+            required
+        />
+        <TextInput 
+            label="Nombre"
+            id="name"
+            name="name"
+            type="text"
+            minlength="3"
+            maxlength="60"
+            required
+        />
+        <TextInput
+            label="Contraseña"
+            id="password"
+            name="password"
+            type="password"
+            minlength="8"
+            maxlength="30"
+            required
+        />
+        <TextInput
+            label="Confirmar contraseña"
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            minlength="8"
+            maxlength="30"
+            required
+        />
+
+        <SecundaryButton 
+            text="Crear cuenta"
+            type="submit" 
+            id="submit-button"
+        />
+    </form>
+
+    <Alert 
+        title="Registro de usuario exitoso" 
+        textMessage="Hemos enviado a tú correo electrónico las instrucciones para activar la cuenta."
+        id="modal-register"
+        open
+    />
+</div>
+
+<style>
+    .container {
+        max-width: 370px;
+        margin: auto;
+        padding: 2rem;
+        border: 1px solid oklch(.371 0 0);
+        border-radius: 0.75rem;
+    }
+
+    form {
+        margin-top: 1rem;
+        display: grid;
+        row-gap: 1rem;
+
+        a {
+            text-align: center;
+        }
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    p {
+        margin-top: 0.5rem;
+        margin-bottom: 1.25rem;
+        color: oklch(.708 0 0);
+        text-align: center;
+    }
+
+    .message-error {
+        display: none;
+        margin-top: 2rem;
+        font-weight: bold;
+        color: var(--color-danger);
+    }
+</style>
+
+<script>
+    import { registerWithPassword, redirectToGoogleLogin } from '@services/auth/authService';
+    
+    const registerForm = document.getElementById('register-form') as HTMLFormElement;
+    const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+    const googleButton = document.getElementById('google-button') as HTMLButtonElement;
+    const allInputs = registerForm.querySelectorAll('input');
+    const messageError = document.getElementById('message-error') as HTMLFormElement;
+    const modalRegister = document.getElementById('modal-register') as HTMLFormElement;
+
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(registerForm);
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+        const confirmPassword = formData.get('confirmPassword') as string;
+        const name = formData.get('name') as string;
+
+        if(password === confirmPassword){
+            const dataResponse = await registerWithPassword({ email, password, name });
+            if(!dataResponse.statusOk){
+                messageError.textContent = dataResponse.message;
+                messageError.style.display = 'block';
+            }else{
+                modalRegister.showModal();
+                // window.location.href = '/dashboard';
+            }
+        }else{
+            messageError.textContent = "Campos Contraseña y Confirmar contraseña no coinciden";
+            messageError.style.display = 'block';
+        }
+
+    });
+
+    googleButton.addEventListener('click', () => {
+        redirectToGoogleLogin();
+    });
+</script>
